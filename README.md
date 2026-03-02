@@ -1,133 +1,322 @@
 # 🏗️ Urban Infrastructure Health & Anomaly Analysis System
 
-A scalable system that evaluates the operational condition of urban infrastructure assets using defined rules, thresholds, and statistical patterns. It identifies abnormal conditions, classifies asset health states, and presents health information in a clear, structured, and explainable manner.
 
----
+🏗️ INFRA-HEALTH
+Urban Infrastructure Health & Anomaly Analysis System
+1. Overview
 
-## Project Structure
+INFRA-HEALTH is a structured, rule-driven infrastructure monitoring system designed to evaluate the operational condition of urban infrastructure assets such as bridges.
 
-```
-urban_infra/
+The system integrates:
+
+Sensor-based anomaly detection
+
+Defined operational thresholds
+
+Weighted health scoring
+
+ML-assisted crack inspection
+
+Structured health state classification
+
+Dashboard-based visualization
+
+It detects abnormal operational behavior, classifies asset health states, and presents interpretable, structured health information for decision-making.
+
+2. Problem Context
+
+Urban infrastructure degrades over time due to:
+
+Structural stress
+
+Environmental exposure
+
+Dynamic loading
+
+Material fatigue
+
+Monitoring systems must:
+
+Detect abnormal operational behavior
+
+Apply predefined rules or statistical thresholds
+
+Classify asset health states
+
+Provide interpretable outputs
+
+Most existing systems focus on either sensor analytics or image-based inspection independently.
+INFRA-HEALTH integrates both into a unified evaluation framework.
+
+3. System Architecture
+Frontend
+
+Streamlit-based interactive dashboard
+
+Asset selection interface
+
+Health score visualization
+
+Sensor time-series plots
+
+Anomaly log display
+
+Crack image upload module
+
+Backend
+
+FastAPI REST API
+
+Sensor simulation engine
+
+Anomaly detection module
+
+Health scoring engine
+
+Crack inference endpoint
+
+Machine Learning Layer
+
+ResNet18 binary crack classifier
+
+Softmax confidence scoring
+
+OpenCV-based crack geometry analysis
+
+Physics-aware validation logic
+
+4. Health Evaluation Framework
+4.1 Sensor-Based Anomaly Detection
+
+Monitored Parameters:
+
+Vibration
+
+Stress load
+
+Temperature
+
+Methodology:
+
+Z-score based anomaly detection
+
+Threshold-based rule evaluation
+
+Spike identification
+
+Structured anomaly logging
+
+An abnormal condition is flagged when:
+
+|Z| > predefined threshold
+4.2 Weighted Health Scoring
+
+The final health score (0–100) is computed using weighted contributions:
+
+Component	Weight
+Crack Score	40%
+Vibration	30%
+Stress	20%
+Temperature	10%
+Health State Classification
+
+Healthy
+
+Warning
+
+Critical
+
+Failure
+
+Classification is rule-derived, not purely predictive.
+
+4.3 ML-Assisted Crack Analysis
+
+Optional crack inspection module includes:
+
+Modified ResNet18 (custom fully connected layer)
+
+Softmax probability extraction
+
+Binary crack mask generation
+
+Crack length estimation
+
+Dominant orientation analysis
+
+Severity computation (length × confidence)
+
+Risk label assignment
+
+This module enhances structural evaluation while remaining integrated within the rule-based scoring system.
+
+5. Operational Modes
+Simulation Mode
+
+Synthetic sensor data generation
+
+Rule-based anomaly detection
+
+Health score computation
+
+Demonstration without real hardware
+
+Real Inference Mode
+
+Crack image upload
+
+CNN-based crack detection
+
+Physics-aware validation
+
+Integration into overall health evaluation
+
+6. System Output
+
+For each infrastructure asset, the system provides:
+
+Detected abnormal conditions
+
+Structured anomaly logs
+
+Crack detection results (if image provided)
+
+Crack geometry metrics
+
+Risk classification
+
+Weighted health score
+
+Health state category
+
+The output aligns with infrastructure monitoring requirements:
+
+Evaluate operational condition
+
+Identify anomalies
+
+Classify health states
+
+Present structured health information
+
+7. Project Structure
+INFRA-HEALTH/
+│
 ├── backend/
-│   ├── main.py          # FastAPI application + endpoints
-│   ├── models.py        # InfrastructureAsset & BridgeAsset classes
-│   ├── simulation.py    # Crack detection + sensor data simulation
-│   ├── anomaly.py       # Z-score / threshold / trend anomaly detection
-│   └── scoring.py       # Weighted health scoring engine
+│   ├── main.py
+│   ├── anomaly.py
+│   ├── scoring.py
+│   ├── simulation.py
+│   ├── crack_inference.py
+│   └── physics_filters/
+│
 ├── frontend/
-│   └── app.py           # Streamlit dashboard
-└── requirements.txt
-```
+│   └── app.py
+│
+├── models/
+│   └── baseline_resnet/
+│       └── resnet18_sdnet_baseline.pth
+│
+└── README.md
+8. Installation & Usage
+Clone Repository
+git clone https://github.com/your-username/INFRA-HEALTH.git
+cd INFRA-HEALTH
+Create Virtual Environment
+python -m venv venv
 
----
+Activate:
 
-## Setup
+Mac/Linux
 
-### 1. Install dependencies
+source venv/bin/activate
 
-```bash
+Windows
+
+venv\Scripts\activate
+Install Dependencies
 pip install -r requirements.txt
-```
-
-### 2. Start the Backend (FastAPI)
-
-```bash
+Run Backend (FastAPI)
 cd backend
 uvicorn main:app --reload --port 8000
-```
 
-API docs available at: http://localhost:8000/docs
+API runs at:
 
-### 3. Start the Frontend (Streamlit)
-
-In a **separate terminal**:
-
-```bash
+http://localhost:8000
+Run Frontend (Streamlit)
 cd frontend
 streamlit run app.py
-```
 
-Dashboard opens at: http://localhost:8501
+Dashboard runs at:
 
----
+http://localhost:8501
+9. Technology Stack
+Backend
 
-## API Endpoints
+Python
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/simulate-asset` | GET | Full health report for a given asset |
-| `/sensor-data` | GET | Raw time-series sensor readings |
-| `/crack-analysis` | GET | Crack detection simulation result |
-| `/assets` | GET | List all registered assets |
+FastAPI
 
-### Example Response (`/simulate-asset?asset_id=INF-001`)
+Frontend
 
-```json
-{
-  "AssetID": "INF-001",
-  "AssetType": "Bridge",
-  "HealthScore": 52.4,
-  "Status": "Critical",
-  "Anomalies": [
-    "HIGH-risk crack detected: 14.2 mm, confidence 87.30%",
-    "Vibration Z-score anomaly: 3 spike(s) detected (max |Z| = 4.12, threshold = 3.0)",
-    "CRITICAL: Stress overload detected — 12 reading(s) exceeded 100% safe load (max = 118.4%)"
-  ],
-  "ScoreBreakdown": {
-    "crack_contribution": 16.2,
-    "vibration_contribution": 24.6,
-    "stress_contribution": 8.4,
-    "temperature_contribution": 9.8,
-    "raw_crack_score": 40.5,
-    "raw_vibration_score": 82.0,
-    "raw_stress_score": 42.0,
-    "raw_temperature_score": 98.4
-  },
-  "CrackAnalysis": {
-    "crack_confirmed": true,
-    "crack_length": 14.2,
-    "crack_orientation": 73.4,
-    "cnn_confidence": 0.873,
-    "crack_risk_label": "HIGH"
-  }
-}
-```
+Streamlit
 
----
+Machine Learning
 
-## Health Score Formula
+PyTorch
 
-```
-HealthScore = 0.40 × CrackScore
-            + 0.30 × VibrationScore
-            + 0.20 × StressScore
-            + 0.10 × TemperatureScore
-```
+Torchvision (ResNet18)
 
-| Range | Status |
-|-------|--------|
-| 80–100 | ✅ Healthy |
-| 60–79 | ⚠️ Warning |
-| 40–59 | 🔶 Critical |
-| < 40 | ❌ Failure |
+Image Processing
 
----
+OpenCV
 
-## Anomaly Detection Methods
+NumPy
 
-| Sensor | Method | Threshold |
-|--------|--------|-----------|
-| Vibration | Z-score | \|Z\| > 3.0 |
-| Stress | Ratio threshold | > 100% safe load |
-| Temperature | Rolling mean trend | Δ > 5°C over window |
+PIL
 
----
+Data Processing
 
-## Assets in Registry
+Pandas
 
-| ID | Name | Material |
-|----|------|----------|
-| INF-001 | Millbrook Crossing | Reinforced Concrete |
-| INF-002 | Northgate Viaduct | Pre-stressed Concrete |
-| INF-003 | Riverside Steel Arch | Steel |
-| INF-004 | Eastside Overpass | Composite |
+Statistical Analysis
+
+Z-score anomaly detection
+
+10. Limitations
+
+Sensor data is simulated
+
+Binary crack classification only
+
+No real-time IoT integration
+
+No temporal crack progression modeling
+
+Designed for research and demonstration purposes
+
+11. Future Improvements
+
+Real sensor integration
+
+Predictive maintenance modeling
+
+Multi-class structural defect classification
+
+Cloud deployment
+
+Real-time monitoring pipeline
+
+12. Conclusion
+
+INFRA-HEALTH is a structured, rule-driven infrastructure health evaluation system that:
+
+Identifies abnormal operational conditions
+
+Applies defined rules and statistical thresholds
+
+Classifies asset health states
+
+Presents interpretable health information
+
+It demonstrates integration of anomaly detection, rule-based evaluation, and ML-assisted inspection within a unified infrastructure monitoring framework.

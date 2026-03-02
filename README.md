@@ -277,7 +277,8 @@ INFRA-HEALTH deliberately combines:
 > Data-driven structural intelligence  
 
 to create a robust and explainable infrastructure monitoring framework.
-##🏁 Conclusion
+
+## 🏁 Conclusion
 
 INFRA-HEALTH demonstrates a structured, rule-driven approach to infrastructure health evaluation by integrating:
 
